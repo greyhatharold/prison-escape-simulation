@@ -1,0 +1,412 @@
+.consciousness-visualizer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #000000;
+  display: flex;
+}
+
+.consciousness-visualizer .node-details {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  z-index: 10;
+  color: white;
+}
+
+.consciousness-visualizer .node-details h3 {
+  margin: 0 0 10px 0;
+  color: #4fd1c5;
+}
+
+.consciousness-visualizer .node-details p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+}
+
+/* ReactFlow node styling */
+.consciousness-visualizer .react-flow__node {
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 150px;
+  text-align: center;
+}
+
+.consciousness-visualizer .react-flow__node[data-type="learning"] {
+  background: rgba(79, 209, 197, 0.2);
+  border-color: #4fd1c5;
+}
+
+.consciousness-visualizer .react-flow__node[data-type="memory"] {
+  background: rgba(236, 201, 75, 0.2);
+  border-color: #ecc94b;
+}
+
+.consciousness-visualizer .react-flow__edge {
+  stroke: #4fd1c5;
+}
+
+.consciousness-visualizer .react-flow__edge.animated {
+  stroke-dasharray: 5;
+  animation: flowAnimation 1s linear infinite;
+}
+
+.consciousness-visualizer .react-flow__controls {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.consciousness-visualizer .react-flow__controls button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.consciousness-visualizer .react-flow__controls button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes flowAnimation {
+  from {
+    stroke-dashoffset: 10;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.consciousness-visualizer .visualizer-container {
+  flex: 2;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.consciousness-visualizer .insight-panel {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.95);
+  padding: 20px;
+  color: #fff;
+  overflow-y: auto;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 400px;
+}
+
+.consciousness-visualizer .insight-panel h3 {
+  color: #4fd1c5;
+  margin: 0 0 20px 0;
+  font-size: 1.2em;
+  font-weight: 500;
+}
+
+.consciousness-visualizer .insight-content {
+  font-size: 0.9em;
+  font-family: monospace;
+  padding: 10px;
+}
+
+.consciousness-visualizer .insight-content p {
+  margin: 8px 0;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.consciousness-visualizer .learnings-section,
+.consciousness-visualizer .memories-section {
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.consciousness-visualizer .learning-item {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+}
+
+.consciousness-visualizer .learning-item h5 {
+  color: #4fd1c5;
+  margin: 0 0 10px 0;
+  font-size: 1em;
+  text-transform: capitalize;
+}
+
+.consciousness-visualizer .learning-value {
+  padding-left: 10px;
+}
+
+.consciousness-visualizer .array-item {
+  margin: 5px 0;
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid rgba(79, 209, 197, 0.3);
+}
+
+.consciousness-visualizer .object-item {
+  margin: 5px 0;
+  padding: 5px;
+}
+
+.consciousness-visualizer .memory-item {
+  background: rgba(45, 55, 72, 0.8);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  border-left: 2px solid rgba(79, 209, 197, 0.5);
+}
+
+.consciousness-visualizer .memory-field {
+  margin: 6px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.consciousness-visualizer .memory-label {
+  color: #4fd1c5;
+  font-weight: 500;
+  font-size: 0.9em;
+}
+
+.consciousness-visualizer .memory-value {
+  color: rgba(255, 255, 255, 0.9);
+  word-break: break-word;
+}
+
+.consciousness-visualizer .memory-value-object {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  border-radius: 4px;
+  margin: 0;
+  font-family: monospace;
+  font-size: 0.9em;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.consciousness-visualizer .memory-value-empty {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+}
+
+.consciousness-visualizer .memory-value-error {
+  color: #fc8181;
+  font-style: italic;
+}
+
+.consciousness-visualizer .memory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.consciousness-visualizer .conversation-memory-list {
+  margin-top: 8px;
+}
+
+/* Ensure pre tags don't overflow */
+.consciousness-visualizer pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Add scrollbar styling for pre tags */
+.consciousness-visualizer pre::-webkit-scrollbar {
+  height: 6px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.consciousness-visualizer pre::-webkit-scrollbar-thumb {
+  background-color: rgba(79, 209, 197, 0.5);
+  border-radius: 3px;
+}
+
+.consciousness-visualizer h4 {
+  color: #4fd1c5;
+  margin: 0 0 15px 0;
+  font-size: 1.1em;
+  font-weight: 500;
+}
+
+/* Three.js canvas container */
+.consciousness-visualizer canvas {
+  width: 100% !important;
+  height: 100% !important;
+  outline: none;
+}
+
+.consciousness-visualizer .neural-node-label {
+  color: white;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  transform: translate(-50%, -50%);
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+}
+
+.consciousness-visualizer .consciousness-tab {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.consciousness-visualizer .consciousness-header {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+  color: #4fd1c5;
+  font-size: 1.2rem;
+  text-shadow: 0 0 10px rgba(79, 209, 197, 0.5);
+}
+
+/* Scrollbar styling */
+.consciousness-visualizer .insight-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.consciousness-visualizer .insight-panel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.consciousness-visualizer .insight-panel::-webkit-scrollbar-thumb {
+  background: #4fd1c5;
+  border-radius: 3px;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .consciousness-visualizer {
+    flex-direction: column;
+  }
+  
+  .consciousness-visualizer .visualizer-container {
+    height: 60vh;
+  }
+  
+  .consciousness-visualizer .insight-panel {
+    height: 40vh;
+    max-width: none;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+.voice-controls {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(30, 30, 30, 0.8);
+  border-radius: 8px;
+}
+
+.voice-controls button {
+  padding: 10px 20px;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.voice-controls button:hover:not(:disabled) {
+  background: #357abd;
+}
+
+.voice-controls button.listening {
+  background: #e24a4a;
+  animation: pulse 1.5s infinite;
+}
+
+.voice-controls button.disabled,
+.voice-controls button:disabled {
+  background: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+  animation: none;
+}
+
+.voice-controls button.disabled:hover,
+.voice-controls button:disabled:hover {
+  background: #666;
+  transform: none;
+}
+
+.user-message {
+  margin-top: 15px;
+  padding: 10px;
+  background: rgba(50, 50, 50, 0.8);
+  border-radius: 4px;
+  font-style: italic;
+}
+
+.conversation-state {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(30, 30, 30, 0.8);
+  border-radius: 8px;
+}
+
+.conversation-state ul {
+  list-style: none;
+  padding: 0;
+}
+
+.conversation-state li {
+  margin: 8px 0;
+  padding: 8px;
+  background: rgba(50, 50, 50, 0.8);
+  border-radius: 4px;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+} 

@@ -1,0 +1,554 @@
+.prison-escape-container {
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #fff;
+  padding: 0;
+  margin: 0;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+.start-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  background: radial-gradient(circle at center, rgba(79, 209, 197, 0.1) 0%, transparent 70%);
+}
+
+.start-content {
+  max-width: 600px;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 1.5rem;
+  backdrop-filter: blur(10px);
+  animation: pulsate 4s infinite alternate;
+  border: 1px solid rgba(79, 209, 197, 0.2);
+}
+
+@keyframes pulsate {
+  0% {
+    box-shadow: 0 0 20px rgba(79, 209, 197, 0.3);
+    transform: scale(1);
+  }
+  100% {
+    box-shadow: 0 0 40px rgba(79, 209, 197, 0.5);
+    transform: scale(1.02);
+  }
+}
+
+.start-content h1 {
+  font-size: 2.8rem;
+  margin-bottom: 1.5rem;
+  color: #4fd1c5;
+  text-shadow: 0 0 15px rgba(79, 209, 197, 0.5);
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.start-content p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+}
+
+.start-content button {
+  background: linear-gradient(135deg, #4fd1c5 0%, #38b2ac 100%);
+  color: #1a1a2e;
+  padding: 1.2rem 2.5rem;
+  border: none;
+  border-radius: 0.8rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.start-content button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, #38b2ac 0%, #4fd1c5 100%);
+}
+
+.game-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background: #1a1a2e;
+  position: relative;
+}
+
+.map-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.prison-map {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(79, 209, 197, 0.2);
+}
+
+.panel-header h2 {
+  color: #4fd1c5;
+  margin: 0;
+  font-size: 1.8rem;
+  text-shadow: 0 0 10px rgba(79, 209, 197, 0.3);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.controls {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+.control-btn {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+}
+
+.control-btn.pause {
+  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  color: white;
+}
+
+.control-btn.resume {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+}
+
+.control-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(110%);
+}
+
+.speed-select {
+  padding: 0.8rem;
+  border-radius: 0.8rem;
+  background: rgba(45, 55, 72, 0.8);
+  color: white;
+  border: 1px solid rgba(74, 85, 104, 0.5);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.speed-select:hover {
+  background: rgba(45, 55, 72, 1);
+  border-color: rgba(74, 85, 104, 0.8);
+}
+
+/* 3D specific styles */
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+  outline: none;
+  display: block;
+}
+
+.location-node {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s;
+}
+
+.location-node.current {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(79, 209, 197, 0.5);
+  border: 2px solid #4fd1c5;
+}
+
+.location-node:hover {
+  transform: scale(1.1);
+}
+
+.sprite {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: all 0.5s ease;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.sprite.claude {
+  background: #805ad5;
+  color: white;
+  z-index: 10;
+}
+
+.sprite.guard {
+  background: #e53e3e;
+  color: white;
+  z-index: 9;
+}
+
+.thought-bubble {
+  position: absolute;
+  left: 50%;
+  top: 2rem;
+  transform: translateX(-50%);
+  background: white;
+  color: #1a1a2e;
+  padding: 1rem;
+  border-radius: 1rem;
+  max-width: 300px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.stats-panel, .inventory-panel {
+  background: rgba(45, 55, 72, 0.8);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(79, 209, 197, 0.1);
+}
+
+.stats-panel:hover, .inventory-panel:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  border-color: rgba(79, 209, 197, 0.2);
+}
+
+.stats-panel h3, .inventory-panel h3 {
+  color: #4fd1c5;
+  margin-top: 0;
+  border-bottom: 1px solid rgba(74, 85, 104, 0.5);
+  padding-bottom: 0.8rem;
+  margin-bottom: 1.2rem;
+  font-size: 1.3rem;
+  letter-spacing: -0.3px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 0.8rem 0;
+  font-size: 1rem;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 10px;
+  background: rgba(74, 85, 104, 0.3);
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.progress {
+  height: 100%;
+  transition: width 0.5s ease, background-color 0.5s ease;
+  box-shadow: 0 0 8px rgba(79, 209, 197, 0.3);
+}
+
+.log-panel {
+  flex: 1;
+  max-width: 400px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.log-panel h2 {
+  margin: 0 0 15px 0;
+  color: #4fd1c5;
+  font-size: 1.2em;
+}
+
+.log-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  font-family: monospace;
+  font-size: 0.9em;
+  line-height: 1.4;
+  max-height: calc(100vh - 200px);
+}
+
+.log-entry {
+  margin: 8px 0;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  word-break: break-word;
+}
+
+.log-entry.day-marker {
+  color: #4fd1c5;
+  font-weight: bold;
+  text-align: center;
+  background: rgba(79, 209, 197, 0.1);
+  border: 1px solid rgba(79, 209, 197, 0.2);
+}
+
+/* Scrollbar styling for log panel */
+.log-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.log-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.log-content::-webkit-scrollbar-thumb {
+  background: #4fd1c5;
+  border-radius: 3px;
+}
+
+.game-over-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  z-index: 100;
+}
+
+.game-over-modal {
+  background: rgba(45, 55, 72, 0.95);
+  padding: 3rem;
+  border-radius: 1.5rem;
+  text-align: center;
+  max-width: 500px;
+  animation: modal-appear 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow: 0 0 40px rgba(79, 209, 197, 0.5);
+  border: 1px solid rgba(79, 209, 197, 0.2);
+}
+
+@keyframes modal-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.game-over-modal h2 {
+  color: #4fd1c5;
+  margin-bottom: 1.5rem;
+  font-size: 2.2rem;
+  letter-spacing: -0.5px;
+  text-shadow: 0 0 15px rgba(79, 209, 197, 0.5);
+}
+
+.game-over-modal p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+}
+
+.game-over-modal button {
+  background: linear-gradient(135deg, #4fd1c5 0%, #38b2ac 100%);
+  color: #1a1a2e;
+  padding: 1.2rem 2.5rem;
+  border: none;
+  border-radius: 0.8rem;
+  margin-top: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.game-over-modal button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, #38b2ac 0%, #4fd1c5 100%);
+}
+
+.inventory-panel {
+  max-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4fd1c5 #2d3748;
+}
+
+.inventory-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.inventory-panel::-webkit-scrollbar-track {
+  background: #2d3748;
+}
+
+.inventory-panel::-webkit-scrollbar-thumb {
+  background-color: #4fd1c5;
+  border-radius: 3px;
+}
+
+.inventory-panel ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.inventory-panel li {
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.inventory-panel li:hover {
+  color: #4fd1c5;
+  transform: translateX(3px);
+}
+
+.inventory-panel li::before {
+  content: '•';
+  color: #4fd1c5;
+  position: absolute;
+  left: -15px;
+}
+
+.empty-inventory {
+  color: #a0aec0;
+  font-style: italic;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .game-container {
+    flex-direction: column;
+  }
+
+  .map-panel {
+    height: 60vh;
+  }
+
+  .log-panel {
+    height: 40vh;
+    max-width: none;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .log-content {
+    max-height: calc(40vh - 100px);
+  }
+}
+
+/* Animation for thought bubble in 3D */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Remove old tab controls */
+.tab-controls {
+  display: none;
+}
+
+/* Add new consciousness toggle button */
+.consciousness-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background: rgba(79, 209, 197, 0.2);
+  border: 1px solid rgba(79, 209, 197, 0.3);
+  border-radius: 8px;
+  color: #4fd1c5;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 100;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.consciousness-toggle:hover {
+  background: rgba(79, 209, 197, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(79, 209, 197, 0.3);
+}
+
+.consciousness-toggle.active {
+  background: rgba(79, 209, 197, 0.8);
+  color: #1a1a2e;
+}
+
+/* Ensure consciousness view takes full space when active */
+.consciousness-tab {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #1a1a2e;
+  z-index: 90;
+} 
