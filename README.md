@@ -69,7 +69,7 @@ REACT_APP_ANTHROPIC_API_KEY=your_api_key_here
 
 4. Start the development server:
 ```bash
-npm start
+npm run dev
 # or
 yarn start
 ```
@@ -138,4 +138,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Support
 
-For support, please open an issue in the repository or contact the development team.
+For support, please open an issue in the repository or contact me directly. 
