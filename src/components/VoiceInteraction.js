@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { getClaudeDecision, getClaudeReflection } from '../api/claude';
+import { MAX_ACTIVE_MEMORIES, MEMORY_TYPES } from './constants';
 
 export const useVoiceRecognition = (onSpeechResult) => {
   const recognitionRef = useRef(null);
@@ -100,6 +101,30 @@ export const useClaudeConversation = (speakFunction) => {
     memories: []
   });
 
+  const sanitizeValue = (value) => {
+    if (value === null || value === undefined) return '';
+    if (Array.isArray(value)) return value.map(String).join(', ');
+    if (typeof value === 'object') {
+      try {
+        return JSON.stringify(value);
+      } catch (error) {
+        console.error('Error stringifying value:', error);
+        return '';
+      }
+    }
+    return String(value);
+  };
+
+  const createMemoryEntry = (data) => {
+    return {
+      [MEMORY_TYPES.INSIGHT]: sanitizeValue(data.insight || 'No insight'),
+      [MEMORY_TYPES.CONTEXT]: sanitizeValue(data.context || ''),
+      [MEMORY_TYPES.EVENT]: sanitizeValue(data.event || ''),
+      [MEMORY_TYPES.DAY]: sanitizeValue(data.day || Date.now()),
+      timestamp: Date.now()
+    };
+  };
+
   const processUserInput = async (userInput) => {
     try {
       console.log('Processing user input:', userInput);
@@ -114,31 +139,28 @@ export const useClaudeConversation = (speakFunction) => {
         lastInteraction: userInput
       });
 
-      // Create a properly structured memory object
-      const newMemory = {
-        insight: typeof reflection.insight === 'object' ? 
-          JSON.parse(JSON.stringify(reflection.insight)) : // Deep clone if object
-          String(reflection.insight), // Convert to string if not
-        context: reflection.context ? 
-          (typeof reflection.context === 'object' ? 
-            JSON.parse(JSON.stringify(reflection.context)) : 
-            String(reflection.context)
-          ) : undefined,
-        day: reflection.day || Date.now(),
-        timestamp: Date.now()
-      };
+      // Create a properly structured memory
+      const newMemory = createMemoryEntry({
+        insight: reflection.insight,
+        context: reflection.context,
+        event: userInput,
+        day: reflection.day
+      });
 
       // Update conversation state with properly structured memory
-      setConversationState(prev => ({
-        ...prev,
-        selfAwareness: Math.min(100, Math.max(0, prev.selfAwareness + (reflection.selfAwarenessChange || 0))),
-        memories: [...(Array.isArray(prev.memories) ? prev.memories : []), newMemory].slice(-5)
-      }));
+      setConversationState(prev => {
+        const currentMemories = Array.isArray(prev.memories) ? prev.memories : [];
+        return {
+          ...prev,
+          selfAwareness: Math.min(100, Math.max(0, prev.selfAwareness + (reflection.selfAwarenessChange || 0))),
+          memories: [...currentMemories, newMemory].slice(-MAX_ACTIVE_MEMORIES)
+        };
+      });
 
       return {
-        decision: typeof decision === 'object' ? JSON.parse(JSON.stringify(decision)) : String(decision),
-        reflection: typeof reflection === 'object' ? JSON.parse(JSON.stringify(reflection)) : String(reflection),
-        thought: reflection.thought ? String(reflection.thought) : undefined
+        decision: sanitizeValue(decision),
+        reflection: sanitizeValue(reflection),
+        thought: sanitizeValue(reflection.thought)
       };
     } catch (error) {
       console.error('Error processing conversation:', error);

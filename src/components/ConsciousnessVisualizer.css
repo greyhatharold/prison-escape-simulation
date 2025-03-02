@@ -409,4 +409,90 @@
   100% {
     transform: scale(1);
   }
+}
+
+.memory-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.memory-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background: rgba(45, 55, 72, 0.4);
+  border-radius: 8px;
+}
+
+.pagination-button {
+  background: rgba(79, 209, 197, 0.2);
+  border: 1px solid rgba(79, 209, 197, 0.3);
+  color: #4fd1c5;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background: rgba(79, 209, 197, 0.3);
+  transform: translateY(-1px);
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9em;
+}
+
+.memory-empty {
+  text-align: center;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  background: rgba(45, 55, 72, 0.4);
+  border-radius: 8px;
+}
+
+/* Ensure smooth transitions for memory chunks */
+.memory-list {
+  transition: opacity 0.3s ease;
+}
+
+/* Add a loading state for memory transitions */
+.memory-list.loading {
+  opacity: 0.5;
+}
+
+/* Improve scrolling behavior for memory containers */
+.memories-section,
+.conversation-state {
+  max-height: 50vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(79, 209, 197, 0.5) rgba(45, 55, 72, 0.4);
+}
+
+.memories-section::-webkit-scrollbar,
+.conversation-state::-webkit-scrollbar {
+  width: 6px;
+}
+
+.memories-section::-webkit-scrollbar-track,
+.conversation-state::-webkit-scrollbar-track {
+  background: rgba(45, 55, 72, 0.4);
+}
+
+.memories-section::-webkit-scrollbar-thumb,
+.conversation-state::-webkit-scrollbar-thumb {
+  background-color: rgba(79, 209, 197, 0.5);
+  border-radius: 3px;
 } 

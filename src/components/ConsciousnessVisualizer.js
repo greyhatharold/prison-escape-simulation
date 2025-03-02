@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
 import { OrbitControls, Html } from '@react-three/drei';
 import { Canvas, useFrame } from '@react-three/fiber';
@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper';
 import { useSpeakingAnimation, SpeechBubble } from './SpeakingAnimation';
 import { useVoiceRecognition, useClaudeConversation } from './VoiceInteraction';
+import { MEMORIES_PER_PAGE, MAX_ACTIVE_MEMORIES, MEMORY_TYPES } from './constants';
 import './ConsciousnessVisualizer.css';
 
 const HeadModel = React.forwardRef(({ learnings, memories }, ref) => {
@@ -312,38 +313,22 @@ const HeadModel = React.forwardRef(({ learnings, memories }, ref) => {
   );
 });
 
-// Memory management utilities
-const MEMORIES_PER_PAGE = 5;
-const MAX_ACTIVE_MEMORIES = 15;
-
-const chunkMemories = (memories) => {
-  if (!Array.isArray(memories)) return [];
-  return memories.reduce((chunks, memory, index) => {
-    const chunkIndex = Math.floor(index / MEMORIES_PER_PAGE);
-    if (!chunks[chunkIndex]) {
-      chunks[chunkIndex] = [];
-    }
-    chunks[chunkIndex].push(memory);
-    return chunks;
-  }, []);
-};
-
 // Memory rendering components
 const MemoryValue = ({ value }) => {
-  if (value === null || value === undefined) {
+  if (value === null || value === undefined || value === '') {
     return <span className="memory-value-empty">Not available</span>;
   }
 
+  // Handle arrays by joining with commas
+  if (Array.isArray(value)) {
+    return <span className="memory-value">{value.join(', ')}</span>;
+  }
+
+  // Handle objects by stringifying
   if (typeof value === 'object') {
     try {
-      const stringified = JSON.stringify(value, null, 2);
-      return (
-        <pre className="memory-value-object">
-          {stringified}
-        </pre>
-      );
+      return <span className="memory-value">{JSON.stringify(value)}</span>;
     } catch (error) {
-      console.error('Error stringifying value:', error);
       return <span className="memory-value-error">Error displaying value</span>;
     }
   }
@@ -351,33 +336,35 @@ const MemoryValue = ({ value }) => {
   return <span className="memory-value">{String(value)}</span>;
 };
 
+const LearningItem = ({ label, value }) => (
+  <div className="learning-item">
+    <h5>{label}</h5>
+    <div className="learning-value">
+      <MemoryValue value={value} />
+    </div>
+  </div>
+);
+
 const MemoryItem = ({ memory }) => {
   if (!memory || typeof memory !== 'object') {
     return null;
   }
 
+  const memoryFields = [
+    { label: 'Day', value: memory[MEMORY_TYPES.DAY] },
+    { label: 'Event', value: memory[MEMORY_TYPES.EVENT] },
+    { label: 'Insight', value: memory[MEMORY_TYPES.INSIGHT] },
+    ...(memory[MEMORY_TYPES.CONTEXT] ? [{ label: 'Context', value: memory[MEMORY_TYPES.CONTEXT] }] : [])
+  ].filter(field => field.value !== undefined && field.value !== '');
+
   return (
     <div className="memory-item">
-      <div className="memory-field">
-        <span className="memory-label">Day:</span>
-        <MemoryValue value={memory.day} />
-      </div>
-      {memory.event && (
-        <div className="memory-field">
-          <span className="memory-label">Event:</span>
-          <MemoryValue value={memory.event} />
+      {memoryFields.map(({ label, value }) => (
+        <div key={label} className="memory-field">
+          <span className="memory-label">{label}:</span>
+          <MemoryValue value={value} />
         </div>
-      )}
-      <div className="memory-field">
-        <span className="memory-label">Insight:</span>
-        <MemoryValue value={memory.insight} />
-      </div>
-      {memory.context && (
-        <div className="memory-field">
-          <span className="memory-label">Context:</span>
-          <MemoryValue value={memory.context} />
-        </div>
-      )}
+      ))}
     </div>
   );
 };
@@ -388,11 +375,20 @@ const PaginatedMemoryList = ({ memories, className }) => {
   
   useEffect(() => {
     if (Array.isArray(memories)) {
-      // Keep only the most recent MAX_ACTIVE_MEMORIES
-      const recentMemories = memories.slice(-MAX_ACTIVE_MEMORIES);
-      setMemoryChunks(chunkMemories(recentMemories));
+      const validMemories = memories
+        .filter(m => m && typeof m === 'object')
+        .slice(-MAX_ACTIVE_MEMORIES);
+      
+      const chunks = [];
+      for (let i = 0; i < validMemories.length; i += MEMORIES_PER_PAGE) {
+        chunks.push(validMemories.slice(i, i + MEMORIES_PER_PAGE));
+      }
+      
+      setMemoryChunks(chunks);
+      setCurrentPage(chunks.length - 1); // Show most recent memories
     } else {
       setMemoryChunks([]);
+      setCurrentPage(0);
     }
   }, [memories]);
 
@@ -408,7 +404,7 @@ const PaginatedMemoryList = ({ memories, className }) => {
       <div className="memory-list">
         {currentMemories.map((memory, index) => (
           <MemoryItem 
-            key={`memory-${currentPage}-${index}`} 
+            key={`memory-${memory.timestamp || index}`} 
             memory={memory} 
           />
         ))}
@@ -416,7 +412,7 @@ const PaginatedMemoryList = ({ memories, className }) => {
       {totalPages > 1 && (
         <div className="memory-pagination">
           <button 
-            onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+            onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
             disabled={currentPage === 0}
             className="pagination-button"
           >
@@ -426,7 +422,7 @@ const PaginatedMemoryList = ({ memories, className }) => {
             Page {currentPage + 1} of {totalPages}
           </span>
           <button 
-            onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+            onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
             disabled={currentPage === totalPages - 1}
             className="pagination-button"
           >
@@ -484,6 +480,14 @@ const ConsciousnessVisualizer = ({ learnings, memories, onVoiceInteraction, isIn
     }
   }, [isInteracting, isListening, stopListening]);
 
+  const processedLearnings = useMemo(() => {
+    if (!learnings) return [];
+    return Object.entries(learnings).map(([key, value]) => ({
+      key,
+      value: Array.isArray(value) ? value : [value]
+    }));
+  }, [learnings]);
+
   return (
     <div className="consciousness-visualizer">
       <div className="visualizer-container">
@@ -507,20 +511,15 @@ const ConsciousnessVisualizer = ({ learnings, memories, onVoiceInteraction, isIn
         <div className="insight-content">
           <div className="learnings-section">
             <h4>Learnings</h4>
-            {learnings && Object.entries(learnings).map(([key, value]) => (
-              <div key={key} className="learning-item">
-                <h5>{key}</h5>
-                <div className="learning-value">
-                  <MemoryValue value={value} />
-                </div>
-              </div>
+            {processedLearnings.map(({ key, value }) => (
+              <LearningItem key={key} label={key} value={value} />
             ))}
           </div>
           
           <div className="memories-section">
             <h4>Recent Memories</h4>
             <PaginatedMemoryList 
-              memories={memories} 
+              memories={Array.isArray(memories) ? memories : []} 
               className="memory-list-container" 
             />
           </div>
@@ -545,7 +544,7 @@ const ConsciousnessVisualizer = ({ learnings, memories, onVoiceInteraction, isIn
             <p>Self-Awareness: <MemoryValue value={conversationState.selfAwareness} />%</p>
             <p>Recent Memories:</p>
             <PaginatedMemoryList 
-              memories={conversationState.memories} 
+              memories={Array.isArray(conversationState.memories) ? conversationState.memories : []} 
               className="conversation-memory-list" 
             />
           </div>
